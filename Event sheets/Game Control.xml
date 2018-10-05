@@ -1,0 +1,869 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2eventsheet>
+    <!--All the 'name' attributes are ignored by Construct 2 - they are there for readability only.-->
+    <name>Game Control</name>
+    <events>
+        <variable comment="Value to solve counterintuitive X axis versus positive inventory position" constant="1" name="DIR_ZERO" sid="147584844420011" static="0" type="number">-1</variable>
+        <variable constant="1" name="DIR_POSITIVE" sid="782203003531872" static="0" type="number">1</variable>
+        <variable comment="Describes the width (in pixels) for a block to move over to the next slot." constant="0" name="BLOCKUNIT" sid="559185533606543" static="0" type="number">0</variable>
+        <variable constant="0" name="INVGAP" sid="983111322143814" static="0" type="number">4</variable>
+        <variable constant="0" name="BELTSTART" sid="155273024160417" static="0" type="number">0</variable>
+        <variable comment="Position of selection from right-most object." constant="0" name="invpos" sid="610583772849533" static="0" type="number">0</variable>
+        <variable comment="Turns into 1 once the belt is ready to be used." constant="0" name="pastSetup" sid="857852730494157" static="0" type="number">0</variable>
+        <variable comment="Number of blocks on the scrolling inventory." constant="0" name="invtotal" sid="871344008304172" static="0" type="number">0</variable>
+        <event-group description="List of all functions used in gameplay." sid="607305050756434" title="Functions">
+            <sub-events>
+                <event-group description="" sid="716748126986281" title="Block Functions">
+                    <sub-events>
+                        <event-block sid="840355541562170">
+                            <conditions>
+                                <condition id="0" name="On function" sid="304336187059767" type="Function">
+                                    <param id="0" name="Name">&quot;blockLands&quot;</param>
+                                </condition>
+                                <condition id="-7" name="Compare instance variable" sid="936650242255667" type="block">
+                                    <param id="0" name="Instance variable">transit_state</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">2</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action behavior="Bullet" id="0" name="Set speed" sid="737346082218599" type="block">
+                                    <param id="0" name="Speed">0</param>
+                                </action>
+                                <action disabled="1" id="-2" name="Set Y" sid="438379451188810" type="block">
+                                    <param id="0" name="Y">Function.Param(0)</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="982858176076815">
+                            <conditions>
+                                <condition id="0" name="On function" sid="430213494886247" type="Function">
+                                    <param id="0" name="Name">&quot;shootBlock&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="697975210214688">
+                                    <conditions>
+                                        <condition id="3" name="Compare frame" sid="568935817365997" type="block">
+                                            <param id="0" name="Comparison">1</param>
+                                            <param id="1" name="Number">0</param>
+                                        </condition>
+                                        <condition id="-36" name="Pick overlapping point" sid="237500719720086" type="System">
+                                            <param id="0" name="Object">block</param>
+                                            <param id="1" name="X">selectbox.X</param>
+                                            <param id="2" name="Y">selectbox.Y</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action behavior="Pin" id="1" name="Unpin" sid="570880916857944" type="block" />
+                                        <action id="-2" name="Set Y" sid="913227847014404" type="block">
+                                            <param id="0" name="Y">block.Y - BLOCKUNIT</param>
+                                        </action>
+                                        <action id="11" name="Set collisions enabled" sid="742091871863655" type="block">
+                                            <param id="0" name="Collisions">1</param>
+                                        </action>
+                                        <action behavior="Bullet" id="0" name="Set speed" sid="181522150302567" type="block">
+                                            <param id="0" name="Speed">100</param>
+                                        </action>
+                                        <action behavior="Bullet" id="3" name="Set angle of motion" sid="719486855115679" type="block">
+                                            <param id="0" name="Angle">270</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="381237928278434" type="block">
+                                            <param id="0" name="Instance variable">transit_state</param>
+                                            <param id="1" name="Value">1</param>
+                                        </action>
+                                        <action id="0" name="Call function" sid="235429049799377" type="Function">
+                                            <param id="0" name="Name">&quot;unbeltBlock&quot;</param>
+                                            <param id="1" name="Parameter {n}">block.X</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <comment>Params: 0 for type, 1 for position of insertion, 2 for how many times to repeat</comment>
+                        <event-block sid="997643343209959">
+                            <conditions>
+                                <condition id="0" name="On function" sid="136816711507734" type="Function">
+                                    <param id="0" name="Name">&quot;addBlock&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <variable constant="0" name="belt_slot" sid="704385924276352" static="0" type="number">0</variable>
+                                <variable constant="0" name="cycles" sid="596576492556463" static="0" type="number">0</variable>
+                                <event-block sid="508459079764339">
+                                    <conditions>
+                                        <condition id="-8" name="Compare two values" sid="912629908629802" type="System">
+                                            <param id="0" name="First value">Function.ParamCount</param>
+                                            <param id="1" name="Comparison">4</param>
+                                            <param id="2" name="Second value">2</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="287071354027250" type="System">
+                                            <param id="0" name="Variable">cycles</param>
+                                            <param id="1" name="Value">Function.Param(2)</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="122352099189097">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="918127309025883" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="148783758269112" type="System">
+                                            <param id="0" name="Variable">cycles</param>
+                                            <param id="1" name="Value">1</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="286643250722219">
+                                    <conditions>
+                                        <condition id="-8" name="Compare two values" sid="846057370904096" type="System">
+                                            <param id="0" name="First value">Function.Param(1)</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Second value">0</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="904035810100617" type="System">
+                                            <param id="0" name="Variable">belt_slot</param>
+                                            <param id="1" name="Value">invtotal</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="482415087501380">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="850561374380963" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="554539972354940" type="System">
+                                            <param id="0" name="Variable">belt_slot</param>
+                                            <param id="1" name="Value">Function.Param(1)</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="889913046375785">
+                                    <conditions>
+                                        <condition id="-10" name="For" sid="214578893886256" type="System">
+                                            <param id="0" name="Name">&quot;&quot;</param>
+                                            <param id="1" name="Start index">1</param>
+                                            <param id="2" name="End index">cycles</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-3" name="Create object" sid="539694774246346" type="System">
+                                            <param id="0" name="Object to create">block</param>
+                                            <param id="1" name="Layer">1</param>
+                                            <param id="2" name="X">0</param>
+                                            <param id="3" name="Y">0</param>
+                                        </action>
+                                        <action id="0" name="Set text" sid="116443689734839" type="Text">
+                                            <param id="0" name="Text">&quot;1) &quot; &amp; block.X &amp; newline</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="185829563754139" type="block">
+                                            <param id="0" name="Instance variable">type</param>
+                                            <param id="1" name="Value">Function.Param(0)</param>
+                                        </action>
+                                        <action id="1" name="Append text" sid="958534954072462" type="Text">
+                                            <param id="0" name="Text">&quot; 2) &quot; &amp; block.X &amp; newline</param>
+                                        </action>
+                                        <action id="5" name="Set frame" sid="815014085705304" type="block">
+                                            <param id="0" name="Frame number">block.type</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="594424836702120" type="block">
+                                            <param id="0" name="Instance variable">transit_state</param>
+                                            <param id="1" name="Value">0</param>
+                                        </action>
+                                        <action id="11" name="Set collisions enabled" sid="902651598146005" type="block">
+                                            <param id="0" name="Collisions">1</param>
+                                        </action>
+                                        <action id="1" name="Append text" sid="689227520377144" type="Text">
+                                            <param id="0" name="Text">&quot; 3) &quot; &amp; block.X &amp; newline</param>
+                                        </action>
+                                    </actions>
+                                    <sub-events>
+                                        <event-block sid="466542256785714">
+                                            <conditions>
+                                                <condition id="-14" name="Compare variable" sid="144106021404110" type="System">
+                                                    <param id="0" name="Variable">pastSetup</param>
+                                                    <param id="1" name="Comparison">0</param>
+                                                    <param id="2" name="Value">1</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action id="0" name="Call function" sid="450881101556997" type="Function">
+                                                    <param id="0" name="Name">&quot;expandBelt&quot;</param>
+                                                    <param id="1" name="Parameter {n}"></param>
+                                                </action>
+                                                <action id="1" name="Append text" sid="273465196838252" type="Text">
+                                                    <param id="0" name="Text">&quot; 4) &quot; &amp; block.X &amp; newline</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="592583847219606">
+                                            <conditions />
+                                            <actions>
+                                                <action disabled="1" id="0" name="Set text" sid="771341659892333" type="Text">
+                                                    <param id="0" name="Text">&quot;Befr::  | &quot; &amp; block.X  &amp; &quot;, &quot; &amp; block.Y &amp; &quot; slot: &quot; &amp; belt_slot &amp; &quot;, pos: &quot; &amp; invpos</param>
+                                                </action>
+                                                <action id="-3" name="Set position" sid="375068461323147" type="block">
+                                                    <param id="0" name="X">BELTSTART + (BLOCKUNIT * belt_slot) + (invpos * BLOCKUNIT)</param>
+                                                    <param id="1" name="Y">beltAnchor.Y</param>
+                                                </action>
+                                                <action id="1" name="Append text" sid="891607879401969" type="Text">
+                                                    <param id="0" name="Text">&quot; 5) &quot; &amp; block.X &amp; newline</param>
+                                                </action>
+                                                <action id="-10" name="Add to" sid="207257562898218" type="System">
+                                                    <param id="0" name="Variable">invtotal</param>
+                                                    <param id="1" name="Value">1</param>
+                                                </action>
+                                                <action id="-10" name="Add to" sid="501994830596699" type="System">
+                                                    <param id="0" name="Variable">belt_slot</param>
+                                                    <param id="1" name="Value">1</param>
+                                                </action>
+                                                <action disabled="1" id="1" name="Append text" sid="415600541089854" type="Text">
+                                                    <param id="0" name="Text">newline &amp; &quot; After: | &quot; &amp; block.X  &amp; &quot;, &quot; &amp; block.Y &amp; &quot; slot: &quot; &amp; belt_slot &amp; &quot;, pos: &quot; &amp; invpos</param>
+                                                </action>
+                                            </actions>
+                                            <sub-events>
+                                                <event-block any="1" sid="336407436470244">
+                                                    <conditions>
+                                                        <condition id="1" name="Is overlapping another object" sid="876063584774686" type="block">
+                                                            <param id="0" name="Object">endAnchor</param>
+                                                        </condition>
+                                                        <condition id="9" name="Is overlapping at offset" sid="762666151564288" type="block">
+                                                            <param id="0" name="Object">endAnchor</param>
+                                                            <param id="1" name="Offset X">BLOCKUNIT</param>
+                                                            <param id="2" name="Offset Y">0</param>
+                                                        </condition>
+                                                    </conditions>
+                                                    <actions>
+                                                        <action behavior="Pin" id="0" name="Pin to object" sid="469826635574083" type="block">
+                                                            <param id="0" name="Pin to">endAnchor</param>
+                                                            <param id="1" name="Mode">0</param>
+                                                        </action>
+                                                        <action behavior="Pin" id="0" name="Pin to object" sid="170736551413330" type="endAnchor">
+                                                            <param id="0" name="Pin to">beltAnchor</param>
+                                                            <param id="1" name="Mode">0</param>
+                                                        </action>
+                                                        <action id="1" name="Append text" sid="638356390278504" type="Text">
+                                                            <param id="0" name="Text">&quot; 6) &quot; &amp; block.X &amp; newline</param>
+                                                        </action>
+                                                    </actions>
+                                                </event-block>
+                                                <event-block sid="841562280506829">
+                                                    <conditions>
+                                                        <condition id="-22" name="Else" sid="266074133388897" type="System" />
+                                                    </conditions>
+                                                    <actions>
+                                                        <action behavior="Pin" id="0" name="Pin to object" sid="568101411877083" type="block">
+                                                            <param id="0" name="Pin to">beltAnchor</param>
+                                                            <param id="1" name="Mode">0</param>
+                                                        </action>
+                                                    </actions>
+                                                </event-block>
+                                                <event-block sid="687738401491281">
+                                                    <conditions />
+                                                    <actions>
+                                                        <action id="11" name="Set collisions enabled" sid="193512323312234" type="block">
+                                                            <param id="0" name="Collisions">0</param>
+                                                        </action>
+                                                    </actions>
+                                                </event-block>
+                                            </sub-events>
+                                        </event-block>
+                                    </sub-events>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <comment>Parameter 0 is the X coord of the block being removed.</comment>
+                        <event-block sid="777851248426651">
+                            <conditions>
+                                <condition id="0" name="On function" sid="583794175084308" type="Function">
+                                    <param id="0" name="Name">&quot;unbeltBlock&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-11" name="Subtract from" sid="907325298416159" type="System">
+                                    <param id="0" name="Variable">invtotal</param>
+                                    <param id="1" name="Value">1</param>
+                                </action>
+                                <action id="0" name="Call function" sid="624507722941283" type="Function">
+                                    <param id="0" name="Name">&quot;crunchBelt&quot;</param>
+                                    <param id="1" name="Parameter {n}">Function.Param(0)</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-group>
+                <event-group description="Functions managing the player&apos;s inventory GUI." sid="732848130993469" title="Belt Functions">
+                    <sub-events>
+                        <event-block sid="147207518946529">
+                            <conditions>
+                                <condition id="0" name="On function" sid="542913028575400" type="Function">
+                                    <param id="0" name="Name">&quot;endFeedBoth&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-15" name="Set visible" sid="676710111846240" type="leftarrow">
+                                    <param id="0" name="Visibility">0</param>
+                                </action>
+                                <action id="-15" name="Set visible" sid="990344118866992" type="rightarrow">
+                                    <param id="0" name="Visibility">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="882474509857963">
+                            <conditions>
+                                <condition id="0" name="On function" sid="524354063389092" type="Function">
+                                    <param id="0" name="Name">&quot;endFeedRight&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-15" name="Set visible" sid="367244516024136" type="rightarrow">
+                                    <param id="0" name="Visibility">0</param>
+                                </action>
+                                <action id="-15" name="Set visible" sid="482523876759050" type="leftarrow">
+                                    <param id="0" name="Visibility">1</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="189993272526089">
+                            <conditions>
+                                <condition id="0" name="On function" sid="892534342725266" type="Function">
+                                    <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-15" name="Set visible" sid="881881980880514" type="rightarrow">
+                                    <param id="0" name="Visibility">1</param>
+                                </action>
+                                <action id="-15" name="Set visible" sid="230935471019475" type="leftarrow">
+                                    <param id="0" name="Visibility">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="184253804780361">
+                            <conditions>
+                                <condition id="0" name="On function" sid="718561713311702" type="Function">
+                                    <param id="0" name="Name">&quot;moveBelt&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <variable constant="0" name="direction" sid="337817390675628" static="0" type="number">0</variable>
+                                <event-block sid="239125587488362">
+                                    <conditions />
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="696653864319175" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Value">Function.Param(0)</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="255420996725109">
+                                    <conditions>
+                                        <condition id="-9" inverted="1" name="Is visible" sid="903399787702293" type="leftarrow" />
+                                        <condition id="-9" inverted="1" name="Is visible" sid="909674395721003" type="rightarrow" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="114627050720466" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Value">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="641726686404241">
+                                    <conditions>
+                                        <condition id="-9" inverted="1" name="Is visible" sid="310194240679742" type="leftarrow" />
+                                        <condition id="-9" name="Is visible" sid="434038480635506" type="rightarrow" />
+                                        <condition id="-14" name="Compare variable" sid="193541595531669" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Value">DIR_ZERO</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="309108576213304" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Value">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="847410782214147">
+                                    <conditions>
+                                        <condition id="-9" name="Is visible" sid="226609842605207" type="leftarrow" />
+                                        <condition id="-9" inverted="1" name="Is visible" sid="497559796771833" type="rightarrow" />
+                                        <condition id="-14" name="Compare variable" sid="128047431822801" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Value">DIR_POSITIVE</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="806006122484267" type="System">
+                                            <param id="0" name="Variable">direction</param>
+                                            <param id="1" name="Value">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <comment>Hearth Block Ideas:&#x0D;&#x0A;-Block that heats when moving OR moved around in the inventory (like lit TNT?)&#x0D;&#x0A;-Blocks that come back to the player after certain conditions are filled&#x0D;&#x0A;-Create unfied chemisty system where blocks react to events (destroyed, heat, sizzled, moved) instead of an per block basis.</comment>
+                                <comment>Test if a block exists</comment>
+                                <event-block any="1" sid="698138281165973">
+                                    <conditions />
+                                    <actions>
+                                        <action id="-1" name="Set X" sid="700560752217054" type="beltAnchor">
+                                            <param id="0" name="X">beltAnchor.X + (BLOCKUNIT * direction)</param>
+                                        </action>
+                                        <action id="-10" name="Add to" sid="310126378949894" type="System">
+                                            <param id="0" name="Variable">invpos</param>
+                                            <param id="1" name="Value">direction</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="841058063213921">
+                                    <conditions>
+                                        <condition id="-14" name="Compare variable" sid="884175685896308" type="System">
+                                            <param id="0" name="Variable">invtotal</param>
+                                            <param id="1" name="Comparison">3</param>
+                                            <param id="2" name="Value">0</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Call function" sid="940114473709036" type="Function">
+                                            <param id="0" name="Name">&quot;endFeedBoth&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="148787274444568">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="696957142634290" type="System" />
+                                        <condition id="-8" name="Compare two values" sid="121717930391242" type="System">
+                                            <param id="0" name="First value">invpos</param>
+                                            <param id="1" name="Comparison">5</param>
+                                            <param id="2" name="Second value">invtotal + 1</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Call function" sid="463953145305680" type="Function">
+                                            <param id="0" name="Name">&quot;endFeedRight&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="842568179086238">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="157533664973457" type="System" />
+                                        <condition id="-8" name="Compare two values" sid="328747372385570" type="System">
+                                            <param id="0" name="First value">invpos</param>
+                                            <param id="1" name="Comparison">3</param>
+                                            <param id="2" name="Second value">0</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Call function" sid="314470837234259" type="Function">
+                                            <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <comment>Parameter 0 is the X position of the added/removed block, Parameter 1 is whether from LEFTDIR or RIGHTDIR.</comment>
+                        <event-block sid="385784078091734">
+                            <conditions>
+                                <condition id="0" name="On function" sid="247771957678984" type="Function">
+                                    <param id="0" name="Name">&quot;crunchBelt&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="864605513741057">
+                                    <conditions>
+                                        <condition id="-7" name="Compare instance variable" sid="909405823525768" type="block">
+                                            <param id="0" name="Instance variable">transit_state</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Value">0</param>
+                                        </condition>
+                                        <condition id="-1" name="Compare X" sid="973394355293742" type="block">
+                                            <param id="0" name="Comparison">5</param>
+                                            <param id="1" name="X co-ordinate">Function.Param(0)</param>
+                                        </condition>
+                                        <condition id="-14" name="Compare variable" sid="854562862127254" type="System">
+                                            <param id="0" name="Variable">invtotal</param>
+                                            <param id="1" name="Comparison">4</param>
+                                            <param id="2" name="Value">0</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action disabled="1" id="-1" name="Set X" sid="962842641678010" type="block">
+                                            <param id="0" name="X">block.X  - BLOCKUNIT</param>
+                                        </action>
+                                        <action behavior="Pin" disabled="1" id="0" name="Pin to object" sid="356793026598235" type="block">
+                                            <param id="0" name="Pin to">beltAnchor</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                        <action disabled="1" id="-11" name="Subtract from" sid="605997841466964" type="System">
+                                            <param id="0" name="Variable">invpos</param>
+                                            <param id="1" name="Value">1</param>
+                                        </action>
+                                        <action disabled="1" id="1" name="Append text" sid="456175063986859" type="Text">
+                                            <param id="0" name="Text">block.X &amp; &quot; -- &quot;</param>
+                                        </action>
+                                        <action behavior="Pin" id="1" name="Unpin" sid="350622582118715" type="block" />
+                                        <action behavior="Pin" id="0" name="Pin to object" sid="528995582293859" type="block">
+                                            <param id="0" name="Pin to">endAnchor</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                        <action behavior="Pin" id="1" name="Unpin" sid="237160615976168" type="endAnchor" />
+                                        <action id="-1" name="Set X" sid="297227449538810" type="endAnchor">
+                                            <param id="0" name="X">endAnchor.X - BLOCKUNIT</param>
+                                        </action>
+                                        <action behavior="Pin" id="0" name="Pin to object" sid="201623239486055" type="endAnchor">
+                                            <param id="0" name="Pin to">beltAnchor</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <event-block sid="582134240900440">
+                            <conditions>
+                                <condition id="0" name="On function" sid="231209076225761" type="Function">
+                                    <param id="0" name="Name">&quot;expandBelt&quot;</param>
+                                </condition>
+                                <condition id="-14" name="Compare variable" sid="805904990039776" type="System">
+                                    <param id="0" name="Variable">invtotal</param>
+                                    <param id="1" name="Comparison">4</param>
+                                    <param id="2" name="Value">0</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="208520884079725">
+                                    <conditions />
+                                    <actions>
+                                        <action behavior="Pin" id="1" name="Unpin" sid="663444072796103" type="endAnchor" />
+                                        <action id="-1" name="Set X" sid="310683182941242" type="endAnchor">
+                                            <param id="0" name="X">endAnchor.X + BLOCKUNIT</param>
+                                        </action>
+                                        <action behavior="Pin" id="0" name="Pin to object" sid="338047284883220" type="endAnchor">
+                                            <param id="0" name="Pin to">beltAnchor</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block disabled="1" sid="253096186193965">
+                                    <conditions>
+                                        <condition id="-34" name="Pick by evaluate" sid="868203593179913" type="System">
+                                            <param id="0" name="Object">block</param>
+                                            <param id="1" name="Expression">block.X = BELTSTART + (BLOCKUNIT  * invtotal)</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action behavior="Pin" id="1" name="Unpin" sid="414205157161789" type="block" />
+                                        <action id="-1" name="Set X" sid="950224308820613" type="block">
+                                            <param id="0" name="X">block.X + BLOCKUNIT</param>
+                                        </action>
+                                        <action behavior="Pin" id="0" name="Pin to object" sid="352376387113760" type="block">
+                                            <param id="0" name="Pin to">beltAnchor</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                    </sub-events>
+                </event-group>
+            </sub-events>
+        </event-group>
+        <event-group description="Script to run once when starting a new game." sid="618857921966387" title="Initialization">
+            <sub-events>
+                <event-block sid="792899482602506">
+                    <conditions>
+                        <condition id="-2" name="On start of layout" sid="294286363484090" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="814642793340028" type="System">
+                            <param id="0" name="Variable">BLOCKUNIT</param>
+                            <param id="1" name="Value">block.Width + INVGAP</param>
+                        </action>
+                        <action id="-9" name="Set value" sid="894075708675016" type="System">
+                            <param id="0" name="Variable">BELTSTART</param>
+                            <param id="1" name="Value">beltAnchor.X + (2 * BLOCKUNIT)</param>
+                        </action>
+                        <action id="0" name="Call function" sid="861894043908682" type="Function">
+                            <param id="0" name="Name">&quot;addBlock&quot;</param>
+                            <param id="1" name="Parameter {n}">0{###}-2{###}2</param>
+                        </action>
+                        <action id="-9" name="Set value" sid="630873677395233" type="System">
+                            <param id="0" name="Variable">invtotal</param>
+                            <param id="1" name="Value">0</param>
+                        </action>
+                        <action id="0" name="Call function" sid="522468530488716" type="Function">
+                            <param id="0" name="Name">&quot;addBlock&quot;</param>
+                            <param id="1" name="Parameter {n}">1{###}0</param>
+                        </action>
+                        <action id="-9" name="Set value" sid="559990838383818" type="System">
+                            <param id="0" name="Variable">invtotal</param>
+                            <param id="1" name="Value">0</param>
+                        </action>
+                        <action id="0" name="Call function" sid="514294793375759" type="Function">
+                            <param id="0" name="Name">&quot;addBlock&quot;</param>
+                            <param id="1" name="Parameter {n}">0{###}1{###}2</param>
+                        </action>
+                        <action id="-9" name="Set value" sid="122287416564635" type="System">
+                            <param id="0" name="Variable">invtotal</param>
+                            <param id="1" name="Value">1</param>
+                        </action>
+                        <action id="-9" name="Set value" sid="835887029430408" type="System">
+                            <param id="0" name="Variable">pastSetup</param>
+                            <param id="1" name="Value">1</param>
+                        </action>
+                    </actions>
+                    <sub-events>
+                        <event-group description="Populating the Codex with blocks, their properties, methods, and initialized states." disabled="1" sid="557491947437331" title="Block Initialization" />
+                        <event-group description="Preparing the inventory belt with blank blocks and cursor pinning." sid="845139613362371" title="Inventory Initialization">
+                            <sub-events>
+                                <event-block sid="500174528687643">
+                                    <conditions />
+                                    <actions>
+                                        <action behavior="UpArrow" id="0" name="Pin to object" sid="378377914944677" type="uparrow">
+                                            <param id="0" name="Pin to">selectbox</param>
+                                            <param id="1" name="Mode">0</param>
+                                        </action>
+                                        <action disabled="1" id="0" name="Call function" sid="262128806778655" type="Function">
+                                            <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-group>
+                    </sub-events>
+                </event-block>
+            </sub-events>
+        </event-group>
+        <event-group description="Handling player input via keyboard." sid="262371770323232" title="Input">
+            <sub-events>
+                <event-block sid="426719764308335">
+                    <conditions>
+                        <condition id="0" name="On key pressed" sid="411281993714340" type="Keyboard">
+                            <param id="0" name="Key">39</param>
+                        </condition>
+                    </conditions>
+                    <actions />
+                    <sub-events>
+                        <event-block sid="118823688216444">
+                            <conditions>
+                                <condition id="1" name="Is overlapping another object" sid="856292844183047" type="selectbox">
+                                    <param id="0" name="Object">leftbox</param>
+                                </condition>
+                                <condition id="2" inverted="1" name="Key is down" sid="991231459665851" type="Keyboard">
+                                    <param id="0" name="Key">32</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-4" name="Set position to another object" sid="564223736261933" type="selectbox">
+                                    <param id="0" name="Object">centerbox</param>
+                                    <param id="1" name="Image point (optional)">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="384438581974818">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="522784403228074" type="System" />
+                                <condition id="1" name="Is overlapping another object" sid="810406316470021" type="selectbox">
+                                    <param id="0" name="Object">centerbox</param>
+                                </condition>
+                                <condition id="2" inverted="1" name="Key is down" sid="429967397112920" type="Keyboard">
+                                    <param id="0" name="Key">32</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-4" name="Set position to another object" sid="459621231119581" type="selectbox">
+                                    <param id="0" name="Object">rightbox</param>
+                                    <param id="1" name="Image point (optional)">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="885189132269616">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="527899223991947" type="System" />
+                                <condition id="-7" name="Compare instance variable" sid="925707538298750" type="block">
+                                    <param id="0" name="Instance variable">transit_state</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">0</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="0" name="Call function" sid="220015036763667" type="Function">
+                                    <param id="0" name="Name">&quot;moveBelt&quot;</param>
+                                    <param id="1" name="Parameter {n}">DIR_POSITIVE</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+                <event-block sid="663196429740310">
+                    <conditions>
+                        <condition id="0" name="On key pressed" sid="780358875102737" type="Keyboard">
+                            <param id="0" name="Key">37</param>
+                        </condition>
+                    </conditions>
+                    <actions />
+                    <sub-events>
+                        <event-block sid="521686781028974">
+                            <conditions>
+                                <condition id="1" name="Is overlapping another object" sid="749675077500842" type="selectbox">
+                                    <param id="0" name="Object">rightbox</param>
+                                </condition>
+                                <condition id="2" inverted="1" name="Key is down" sid="944501812327728" type="Keyboard">
+                                    <param id="0" name="Key">32</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-4" name="Set position to another object" sid="671068352435946" type="selectbox">
+                                    <param id="0" name="Object">centerbox</param>
+                                    <param id="1" name="Image point (optional)">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="869959837948857">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="572997212229635" type="System" />
+                                <condition id="1" name="Is overlapping another object" sid="569877110740268" type="selectbox">
+                                    <param id="0" name="Object">centerbox</param>
+                                </condition>
+                                <condition id="2" inverted="1" name="Key is down" sid="425792789368597" type="Keyboard">
+                                    <param id="0" name="Key">32</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-4" name="Set position to another object" sid="814193900542204" type="selectbox">
+                                    <param id="0" name="Object">leftbox</param>
+                                    <param id="1" name="Image point (optional)">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="868759443287602">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="596838882550272" type="System" />
+                                <condition id="-7" name="Compare instance variable" sid="462611055090030" type="block">
+                                    <param id="0" name="Instance variable">transit_state</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">0</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="0" name="Call function" sid="937086959513459" type="Function">
+                                    <param id="0" name="Name">&quot;moveBelt&quot;</param>
+                                    <param id="1" name="Parameter {n}">DIR_ZERO</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+                <event-block sid="303630657738387">
+                    <conditions>
+                        <condition id="0" name="On key pressed" sid="434436803972357" type="Keyboard">
+                            <param id="0" name="Key">38</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="0" name="Call function" sid="900761543948119" type="Function">
+                            <param id="0" name="Name">&quot;shootBlock&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="257792957790396">
+                    <conditions>
+                        <condition id="0" name="On key pressed" sid="800662386649276" type="Keyboard">
+                            <param id="0" name="Key">40</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action disabled="1" id="0" name="Set text" sid="239291406343686" type="Text">
+                            <param id="0" name="Text">BLOCKUNIT</param>
+                        </action>
+                        <action id="0" name="Call function" sid="227760421545616" type="Function">
+                            <param id="0" name="Name">&quot;addBlock&quot;</param>
+                            <param id="1" name="Parameter {n}">1{###}0</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-group>
+        <event-block sid="760705288270492">
+            <conditions>
+                <condition id="-1" name="Every tick" sid="372632866822790" type="System" />
+            </conditions>
+            <actions>
+                <action disabled="1" id="0" name="Set text" sid="698388188184795" type="Text">
+                    <param id="0" name="Text">invpos &amp; &quot; / &quot; &amp; invtotal</param>
+                </action>
+            </actions>
+            <sub-events>
+                <event-block disabled="1" sid="330544740790890">
+                    <conditions>
+                        <condition id="-1" name="Compare X" sid="469621700208741" type="block">
+                            <param id="0" name="Comparison">3</param>
+                            <param id="1" name="X co-ordinate">leftbox.X</param>
+                        </condition>
+                        <condition id="-1" name="Compare X" sid="128527524077250" type="block">
+                            <param id="0" name="Comparison">5</param>
+                            <param id="1" name="X co-ordinate">rightbox.X</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-15" name="Set visible" sid="724334196402910" type="block">
+                            <param id="0" name="Visibility">0</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block disabled="1" sid="959405141795455">
+                    <conditions>
+                        <condition id="-22" name="Else" sid="539749854458218" type="System" />
+                        <condition id="-9" inverted="1" name="Is visible" sid="433276656595038" type="block" />
+                    </conditions>
+                    <actions>
+                        <action id="-15" name="Set visible" sid="816995112433114" type="block">
+                            <param id="0" name="Visibility">1</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
+        <event-block any="1" sid="340759784841963">
+            <conditions>
+                <condition id="0" name="On collision with another object" sid="919314308169770" type="block">
+                    <param id="0" name="Object">hearthinv</param>
+                </condition>
+                <condition id="0" name="On collision with another object" sid="566695856812974" type="block">
+                    <param id="0" name="Object">block</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="-10" name="Set value" sid="436598017098577" type="block">
+                    <param id="0" name="Instance variable">transit_state</param>
+                    <param id="1" name="Value">2</param>
+                </action>
+                <action disabled="1" id="1" name="Append text" sid="627891742929341" type="Text">
+                    <param id="0" name="Text">block.UID &amp; &quot;, &quot;</param>
+                </action>
+                <action id="0" name="Call function" sid="295591936713986" type="Function">
+                    <param id="0" name="Name">&quot;blockLands&quot;</param>
+                    <param id="1" name="Parameter {n}"></param>
+                </action>
+            </actions>
+        </event-block>
+        <event-block sid="124354042080064">
+            <conditions />
+            <actions />
+        </event-block>
+    </events>
+</c2eventsheet>
