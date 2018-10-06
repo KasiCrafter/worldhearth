@@ -10,8 +10,8 @@
         <variable constant="0" name="BELTSTART" sid="155273024160417" static="0" type="number">0</variable>
         <variable comment="Position of selection from right-most object." constant="0" name="invpos" sid="610583772849533" static="0" type="number">0</variable>
         <variable comment="Turns into 1 once the belt is ready to be used." constant="0" name="pastSetup" sid="857852730494157" static="0" type="number">0</variable>
-        <variable constant="0" name="coolnow" sid="395404526737556" static="0" type="number">0</variable>
-        <variable constant="0" name="cooldown" sid="106103209999780" static="0" type="number">0.2</variable>
+        <variable constant="0" name="shootReady" sid="215619779376089" static="0" type="number">0</variable>
+        <variable constant="0" name="cooldown" sid="106103209999780" static="0" type="number">0.5</variable>
         <variable comment="Number of blocks on the scrolling inventory." constant="0" name="invtotal" sid="871344008304172" static="0" type="number">0</variable>
         <event-group description="List of all functions used in gameplay." sid="607305050756434" title="Functions">
             <sub-events>
@@ -41,6 +41,16 @@
                             <conditions>
                                 <condition id="0" name="On function" sid="430213494886247" type="Function">
                                     <param id="0" name="Name">&quot;shootBlock&quot;</param>
+                                </condition>
+                                <condition id="-14" name="Compare variable" sid="557319746630543" type="System">
+                                    <param id="0" name="Variable">shootReady</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">1</param>
+                                </condition>
+                                <condition disabled="1" id="9" inverted="1" name="Is overlapping at offset" sid="991985891949872" type="selectbox">
+                                    <param id="0" name="Object">block</param>
+                                    <param id="1" name="Offset X">0</param>
+                                    <param id="2" name="Offset Y">(-2 * BLOCKUNIT)</param>
                                 </condition>
                             </conditions>
                             <actions />
@@ -78,6 +88,10 @@
                                         <action id="0" name="Call function" sid="235429049799377" type="Function">
                                             <param id="0" name="Name">&quot;unbeltBlock&quot;</param>
                                             <param id="1" name="Parameter {n}">block.X</param>
+                                        </action>
+                                        <action id="-9" name="Set value" sid="851599732808604" type="System">
+                                            <param id="0" name="Variable">shootReady</param>
+                                            <param id="1" name="Value">0</param>
                                         </action>
                                     </actions>
                                 </event-block>
@@ -476,17 +490,41 @@
                                             <param id="2" name="Value">0</param>
                                         </condition>
                                     </conditions>
-                                    <actions>
-                                        <action behavior="Pin" id="1" name="Unpin" sid="350622582118715" type="block" />
-                                        <action behavior="Pin" id="1" name="Unpin" sid="237160615976168" type="endAnchor" />
-                                        <action behavior="Pin" id="0" name="Pin to object" sid="528995582293859" type="block">
-                                            <param id="0" name="Pin to">endAnchor</param>
-                                            <param id="1" name="Mode">0</param>
-                                        </action>
-                                        <action id="-1" name="Set X" sid="297227449538810" type="endAnchor">
-                                            <param id="0" name="X">endAnchor.X - BLOCKUNIT</param>
-                                        </action>
-                                    </actions>
+                                    <actions />
+                                    <sub-events>
+                                        <event-block sid="723012581708348">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="373175671358564" type="block">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">1</param>
+                                                    <param id="2" name="Value">0</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="Pin" id="1" name="Unpin" sid="350622582118715" type="block" />
+                                                <action id="-1" name="Set X" sid="246073647541630" type="block">
+                                                    <param id="0" name="X">block.X - BLOCKUNIT</param>
+                                                </action>
+                                                <action behavior="Pin" id="0" name="Pin to object" sid="877850991556468" type="block">
+                                                    <param id="0" name="Pin to">beltAnchor</param>
+                                                    <param id="1" name="Mode">0</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="122513582285480">
+                                            <conditions />
+                                            <actions>
+                                                <action behavior="Pin" id="1" name="Unpin" sid="237160615976168" type="endAnchor" />
+                                                <action id="-1" name="Set X" sid="297227449538810" type="endAnchor">
+                                                    <param id="0" name="X">endAnchor.X - BLOCKUNIT</param>
+                                                </action>
+                                                <action behavior="Pin" id="0" name="Pin to object" sid="908098126615825" type="endAnchor">
+                                                    <param id="0" name="Pin to">beltAnchor</param>
+                                                    <param id="1" name="Mode">0</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                    </sub-events>
                                 </event-block>
                             </sub-events>
                         </event-block>
@@ -509,18 +547,6 @@
                                         <action behavior="Pin" id="1" name="Unpin" sid="663444072796103" type="endAnchor" />
                                     </actions>
                                     <sub-events>
-                                        <event-block sid="423514576193765">
-                                            <conditions>
-                                                <condition id="-7" name="Compare instance variable" sid="922936311504481" type="block">
-                                                    <param id="0" name="Instance variable">type</param>
-                                                    <param id="1" name="Comparison">1</param>
-                                                    <param id="2" name="Value">0</param>
-                                                </condition>
-                                            </conditions>
-                                            <actions>
-                                                <action behavior="Pin" id="1" name="Unpin" sid="175491780379109" type="block" />
-                                            </actions>
-                                        </event-block>
                                         <event-block sid="818830920754995">
                                             <conditions />
                                             <actions>
@@ -601,30 +627,27 @@
                             <param id="0" name="Variable">pastSetup</param>
                             <param id="1" name="Value">1</param>
                         </action>
+                        <action behavior="Timer" id="0" name="Start timer" sid="391550014142934" type="selectbox">
+                            <param id="0" name="Duration">cooldown</param>
+                            <param id="1" name="Type">1</param>
+                            <param id="2" name="Tag">&quot;shootReady&quot;</param>
+                        </action>
+                        <action behavior="UpArrow" id="0" name="Pin to object" sid="378377914944677" type="uparrow">
+                            <param id="0" name="Pin to">selectbox</param>
+                            <param id="1" name="Mode">0</param>
+                        </action>
+                        <action id="0" name="Call function" sid="262128806778655" type="Function">
+                            <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
                     </actions>
                     <sub-events>
-                        <event-block sid="286387683438690">
-                            <conditions />
-                            <actions />
-                            <sub-events>
-                                <variable constant="0" name="count" sid="522414189186670" static="0" type="number">0</variable>
-                            </sub-events>
-                        </event-block>
                         <event-group description="Populating the Codex with blocks, their properties, methods, and initialized states." disabled="1" sid="557491947437331" title="Block Initialization" />
                         <event-group description="Preparing the inventory belt with blank blocks and cursor pinning." sid="845139613362371" title="Inventory Initialization">
                             <sub-events>
                                 <event-block sid="500174528687643">
                                     <conditions />
-                                    <actions>
-                                        <action behavior="UpArrow" id="0" name="Pin to object" sid="378377914944677" type="uparrow">
-                                            <param id="0" name="Pin to">selectbox</param>
-                                            <param id="1" name="Mode">0</param>
-                                        </action>
-                                        <action id="0" name="Call function" sid="262128806778655" type="Function">
-                                            <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
-                                            <param id="1" name="Parameter {n}"></param>
-                                        </action>
-                                    </actions>
+                                    <actions />
                                 </event-block>
                             </sub-events>
                         </event-group>
@@ -785,7 +808,7 @@
         </event-group>
         <event-block sid="760705288270492">
             <conditions>
-                <condition id="-1" name="Every tick" sid="372632866822790" type="System" />
+                <condition disabled="1" id="-1" name="Every tick" sid="372632866822790" type="System" />
             </conditions>
             <actions>
                 <action id="0" name="Set text" sid="698388188184795" type="Text">
@@ -828,31 +851,106 @@
                 <condition id="0" name="On collision with another object" sid="919314308169770" type="block">
                     <param id="0" name="Object">hearthinv</param>
                 </condition>
-                <condition id="0" name="On collision with another object" sid="566695856812974" type="block">
-                    <param id="0" name="Object">block</param>
-                </condition>
             </conditions>
             <actions>
                 <action id="-10" name="Set value" sid="436598017098577" type="block">
                     <param id="0" name="Instance variable">transit_state</param>
                     <param id="1" name="Value">2</param>
                 </action>
-                <action disabled="1" id="1" name="Append text" sid="627891742929341" type="Text">
-                    <param id="0" name="Text">block.UID &amp; &quot;, &quot;</param>
-                </action>
                 <action id="0" name="Call function" sid="295591936713986" type="Function">
                     <param id="0" name="Name">&quot;blockLands&quot;</param>
                     <param id="1" name="Parameter {n}"></param>
                 </action>
             </actions>
+            <sub-events>
+                <event-block sid="673781431767463">
+                    <conditions>
+                        <condition id="-23" name="While" sid="699289598618725" type="System" />
+                        <condition id="1" name="Is overlapping another object" sid="657541841388678" type="block">
+                            <param id="0" name="Object">hearthinv</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-2" name="Set Y" sid="685351067450713" type="block">
+                            <param id="0" name="Y">Self.Y + dt * 0.5</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
         </event-block>
-        <event-block sid="425937841453114">
+        <event-block sid="293884264487470">
             <conditions>
-                <condition disabled="1" id="-6" name="Every X seconds" sid="868328843795585" type="System">
-                    <param id="0" name="Interval (seconds)">cooldown</param>
+                <condition id="0" name="On collision with another object" sid="566695856812974" type="block">
+                    <param id="0" name="Object">block</param>
+                </condition>
+                <condition id="-7" name="Compare instance variable" sid="492407293490001" type="block">
+                    <param id="0" name="Instance variable">transit_state</param>
+                    <param id="1" name="Comparison">0</param>
+                    <param id="2" name="Value">1</param>
                 </condition>
             </conditions>
             <actions />
+            <sub-events>
+                <variable constant="0" name="coliderPos" sid="180565699845594" static="0" type="number">0</variable>
+                <event-block sid="258333138468168">
+                    <conditions />
+                    <actions>
+                        <action id="-9" name="Set value" sid="891010323848024" type="System">
+                            <param id="0" name="Variable">coliderPos</param>
+                            <param id="1" name="Value">block.Y</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="826373338204940">
+                    <conditions>
+                        <condition id="-19" name="Pick all" sid="803932931732592" type="System">
+                            <param id="0" name="Object">block</param>
+                        </condition>
+                        <condition id="1" name="Is overlapping another object" sid="990102322648084" type="block">
+                            <param id="0" name="Object">block</param>
+                        </condition>
+                        <condition behavior="Bullet" id="0" name="Compare speed" sid="824283838796253" type="block">
+                            <param id="0" name="Comparison">0</param>
+                            <param id="1" name="Speed">0</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="913072417359287" type="System">
+                            <param id="0" name="Variable">coliderPos</param>
+                            <param id="1" name="Value">block.Y + 17</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="758601840236094">
+                    <conditions />
+                    <actions>
+                        <action id="-2" name="Set Y" sid="821142637609457" type="block">
+                            <param id="0" name="Y">coliderPos</param>
+                        </action>
+                        <action id="-10" name="Set value" sid="539468156950881" type="block">
+                            <param id="0" name="Instance variable">transit_state</param>
+                            <param id="1" name="Value">2</param>
+                        </action>
+                        <action id="0" name="Call function" sid="342859604408328" type="Function">
+                            <param id="0" name="Name">&quot;blockLands&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
+        <event-block sid="347194407537383">
+            <conditions>
+                <condition behavior="Timer" id="0" name="On timer" sid="504864368633083" type="selectbox">
+                    <param id="0" name="Tag">&quot;shootReady&quot;</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="-9" name="Set value" sid="736661235454831" type="System">
+                    <param id="0" name="Variable">shootReady</param>
+                    <param id="1" name="Value">1</param>
+                </action>
+            </actions>
         </event-block>
     </events>
 </c2eventsheet>

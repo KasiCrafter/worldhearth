@@ -19,6 +19,7 @@
         <behavior author="Scirra" id="Bullet" version="1">Bullet</behavior>
         <behavior author="Scirra" id="Persist" version="1">Persist</behavior>
         <behavior author="Scirra" id="Pin" version="1">Pin</behavior>
+        <behavior author="Scirra" id="Timer" version="1">Timer</behavior>
     </used-behaviors>
     <used-effects />
     <configurations>
@@ -87,14 +88,14 @@
                 <animation framecount="2" loop="0" name="BlockTex" pingpong="0" repeatcount="0" repeatto="0" sid="939368043228590" speed="0">
                     <frame duration="0" hotspotX="0.5" hotspotY="0.5" original-source="F:\Users\Home\Documents\More Storage Space\Code Practice\MiniJam4 World Hearth\junk1.png">
                         <collision-poly>
-                            <point x="0" y="0" />
-                            <point x="0.5" y="0" />
-                            <point x="1" y="0" />
-                            <point x="1" y="0.5" />
-                            <point x="1" y="1" />
-                            <point x="0.5" y="1" />
-                            <point x="0" y="1" />
-                            <point x="0" y="0.5" />
+                            <point x="0.0625" y="0.0625" />
+                            <point x="0.5" y="0.0625" />
+                            <point x="0.9375" y="0.0625" />
+                            <point x="0.9375" y="0.5" />
+                            <point x="0.9375" y="0.9375" />
+                            <point x="0.5" y="0.9375" />
+                            <point x="0.0625" y="0.9375" />
+                            <point x="0.0625" y="0.5" />
                         </collision-poly>
                     </frame>
                     <frame duration="1" hotspotX="0.5" hotspotY="0.5" original-source="F:\Users\Home\Documents\More Storage Space\Code Practice\MiniJam4 World Hearth\imp1.png">
@@ -161,6 +162,11 @@
         </object-type>
         <object-type name="selectbox" sid="975159460672531">
             <plugin id="Sprite" />
+            <behaviors>
+                <behavior-type name="Timer" sid="329621987859271">
+                    <behavior id="Timer" />
+                </behavior-type>
+            </behaviors>
             <animation-folder>
                 <animation framecount="1" loop="0" name="Default" pingpong="0" repeatcount="1" repeatto="0" sid="202984332306140" speed="5">
                     <frame duration="1" hotspotX="0.5" hotspotY="0.5" />
