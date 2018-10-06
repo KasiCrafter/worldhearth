@@ -10,6 +10,8 @@
         <variable constant="0" name="BELTSTART" sid="155273024160417" static="0" type="number">0</variable>
         <variable comment="Position of selection from right-most object." constant="0" name="invpos" sid="610583772849533" static="0" type="number">0</variable>
         <variable comment="Turns into 1 once the belt is ready to be used." constant="0" name="pastSetup" sid="857852730494157" static="0" type="number">0</variable>
+        <variable constant="0" name="coolnow" sid="395404526737556" static="0" type="number">0</variable>
+        <variable constant="0" name="cooldown" sid="106103209999780" static="0" type="number">0.2</variable>
         <variable comment="Number of blocks on the scrolling inventory." constant="0" name="invtotal" sid="871344008304172" static="0" type="number">0</variable>
         <event-group description="List of all functions used in gameplay." sid="607305050756434" title="Functions">
             <sub-events>
@@ -57,7 +59,7 @@
                                     </conditions>
                                     <actions>
                                         <action behavior="Pin" id="1" name="Unpin" sid="570880916857944" type="block" />
-                                        <action id="-2" name="Set Y" sid="913227847014404" type="block">
+                                        <action disabled="1" id="-2" name="Set Y" sid="913227847014404" type="block">
                                             <param id="0" name="Y">block.Y - BLOCKUNIT</param>
                                         </action>
                                         <action id="11" name="Set collisions enabled" sid="742091871863655" type="block">
@@ -159,15 +161,9 @@
                                             <param id="2" name="X">0</param>
                                             <param id="3" name="Y">0</param>
                                         </action>
-                                        <action id="0" name="Set text" sid="116443689734839" type="Text">
-                                            <param id="0" name="Text">&quot;1) &quot; &amp; block.X &amp; newline</param>
-                                        </action>
                                         <action id="-10" name="Set value" sid="185829563754139" type="block">
                                             <param id="0" name="Instance variable">type</param>
                                             <param id="1" name="Value">Function.Param(0)</param>
-                                        </action>
-                                        <action id="1" name="Append text" sid="958534954072462" type="Text">
-                                            <param id="0" name="Text">&quot; 2) &quot; &amp; block.X &amp; newline</param>
                                         </action>
                                         <action id="5" name="Set frame" sid="815014085705304" type="block">
                                             <param id="0" name="Frame number">block.type</param>
@@ -178,9 +174,6 @@
                                         </action>
                                         <action id="11" name="Set collisions enabled" sid="902651598146005" type="block">
                                             <param id="0" name="Collisions">1</param>
-                                        </action>
-                                        <action id="1" name="Append text" sid="689227520377144" type="Text">
-                                            <param id="0" name="Text">&quot; 3) &quot; &amp; block.X &amp; newline</param>
                                         </action>
                                     </actions>
                                     <sub-events>
@@ -197,23 +190,14 @@
                                                     <param id="0" name="Name">&quot;expandBelt&quot;</param>
                                                     <param id="1" name="Parameter {n}"></param>
                                                 </action>
-                                                <action id="1" name="Append text" sid="273465196838252" type="Text">
-                                                    <param id="0" name="Text">&quot; 4) &quot; &amp; block.X &amp; newline</param>
-                                                </action>
                                             </actions>
                                         </event-block>
                                         <event-block sid="592583847219606">
                                             <conditions />
                                             <actions>
-                                                <action disabled="1" id="0" name="Set text" sid="771341659892333" type="Text">
-                                                    <param id="0" name="Text">&quot;Befr::  | &quot; &amp; block.X  &amp; &quot;, &quot; &amp; block.Y &amp; &quot; slot: &quot; &amp; belt_slot &amp; &quot;, pos: &quot; &amp; invpos</param>
-                                                </action>
                                                 <action id="-3" name="Set position" sid="375068461323147" type="block">
                                                     <param id="0" name="X">BELTSTART + (BLOCKUNIT * belt_slot) + (invpos * BLOCKUNIT)</param>
                                                     <param id="1" name="Y">beltAnchor.Y</param>
-                                                </action>
-                                                <action id="1" name="Append text" sid="891607879401969" type="Text">
-                                                    <param id="0" name="Text">&quot; 5) &quot; &amp; block.X &amp; newline</param>
                                                 </action>
                                                 <action id="-10" name="Add to" sid="207257562898218" type="System">
                                                     <param id="0" name="Variable">invtotal</param>
@@ -222,9 +206,6 @@
                                                 <action id="-10" name="Add to" sid="501994830596699" type="System">
                                                     <param id="0" name="Variable">belt_slot</param>
                                                     <param id="1" name="Value">1</param>
-                                                </action>
-                                                <action disabled="1" id="1" name="Append text" sid="415600541089854" type="Text">
-                                                    <param id="0" name="Text">newline &amp; &quot; After: | &quot; &amp; block.X  &amp; &quot;, &quot; &amp; block.Y &amp; &quot; slot: &quot; &amp; belt_slot &amp; &quot;, pos: &quot; &amp; invpos</param>
                                                 </action>
                                             </actions>
                                             <sub-events>
@@ -247,9 +228,6 @@
                                                         <action behavior="Pin" id="0" name="Pin to object" sid="170736551413330" type="endAnchor">
                                                             <param id="0" name="Pin to">beltAnchor</param>
                                                             <param id="1" name="Mode">0</param>
-                                                        </action>
-                                                        <action id="1" name="Append text" sid="638356390278504" type="Text">
-                                                            <param id="0" name="Text">&quot; 6) &quot; &amp; block.X &amp; newline</param>
                                                         </action>
                                                     </actions>
                                                 </event-block>
@@ -489,7 +467,7 @@
                                             <param id="2" name="Value">0</param>
                                         </condition>
                                         <condition id="-1" name="Compare X" sid="973394355293742" type="block">
-                                            <param id="0" name="Comparison">5</param>
+                                            <param id="0" name="Comparison">4</param>
                                             <param id="1" name="X co-ordinate">Function.Param(0)</param>
                                         </condition>
                                         <condition id="-14" name="Compare variable" sid="854562862127254" type="System">
@@ -499,32 +477,14 @@
                                         </condition>
                                     </conditions>
                                     <actions>
-                                        <action disabled="1" id="-1" name="Set X" sid="962842641678010" type="block">
-                                            <param id="0" name="X">block.X  - BLOCKUNIT</param>
-                                        </action>
-                                        <action behavior="Pin" disabled="1" id="0" name="Pin to object" sid="356793026598235" type="block">
-                                            <param id="0" name="Pin to">beltAnchor</param>
-                                            <param id="1" name="Mode">0</param>
-                                        </action>
-                                        <action disabled="1" id="-11" name="Subtract from" sid="605997841466964" type="System">
-                                            <param id="0" name="Variable">invpos</param>
-                                            <param id="1" name="Value">1</param>
-                                        </action>
-                                        <action disabled="1" id="1" name="Append text" sid="456175063986859" type="Text">
-                                            <param id="0" name="Text">block.X &amp; &quot; -- &quot;</param>
-                                        </action>
                                         <action behavior="Pin" id="1" name="Unpin" sid="350622582118715" type="block" />
+                                        <action behavior="Pin" id="1" name="Unpin" sid="237160615976168" type="endAnchor" />
                                         <action behavior="Pin" id="0" name="Pin to object" sid="528995582293859" type="block">
                                             <param id="0" name="Pin to">endAnchor</param>
                                             <param id="1" name="Mode">0</param>
                                         </action>
-                                        <action behavior="Pin" id="1" name="Unpin" sid="237160615976168" type="endAnchor" />
                                         <action id="-1" name="Set X" sid="297227449538810" type="endAnchor">
                                             <param id="0" name="X">endAnchor.X - BLOCKUNIT</param>
-                                        </action>
-                                        <action behavior="Pin" id="0" name="Pin to object" sid="201623239486055" type="endAnchor">
-                                            <param id="0" name="Pin to">beltAnchor</param>
-                                            <param id="1" name="Mode">0</param>
                                         </action>
                                     </actions>
                                 </event-block>
@@ -547,14 +507,33 @@
                                     <conditions />
                                     <actions>
                                         <action behavior="Pin" id="1" name="Unpin" sid="663444072796103" type="endAnchor" />
-                                        <action id="-1" name="Set X" sid="310683182941242" type="endAnchor">
-                                            <param id="0" name="X">endAnchor.X + BLOCKUNIT</param>
-                                        </action>
-                                        <action behavior="Pin" id="0" name="Pin to object" sid="338047284883220" type="endAnchor">
-                                            <param id="0" name="Pin to">beltAnchor</param>
-                                            <param id="1" name="Mode">0</param>
-                                        </action>
                                     </actions>
+                                    <sub-events>
+                                        <event-block sid="423514576193765">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="922936311504481" type="block">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">1</param>
+                                                    <param id="2" name="Value">0</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="Pin" id="1" name="Unpin" sid="175491780379109" type="block" />
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="818830920754995">
+                                            <conditions />
+                                            <actions>
+                                                <action id="-1" name="Set X" sid="310683182941242" type="endAnchor">
+                                                    <param id="0" name="X">endAnchor.X + BLOCKUNIT</param>
+                                                </action>
+                                                <action behavior="Pin" id="0" name="Pin to object" sid="338047284883220" type="endAnchor">
+                                                    <param id="0" name="Pin to">beltAnchor</param>
+                                                    <param id="1" name="Mode">0</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                    </sub-events>
                                 </event-block>
                                 <event-block disabled="1" sid="253096186193965">
                                     <conditions>
@@ -564,7 +543,6 @@
                                         </condition>
                                     </conditions>
                                     <actions>
-                                        <action behavior="Pin" id="1" name="Unpin" sid="414205157161789" type="block" />
                                         <action id="-1" name="Set X" sid="950224308820613" type="block">
                                             <param id="0" name="X">block.X + BLOCKUNIT</param>
                                         </action>
@@ -625,6 +603,13 @@
                         </action>
                     </actions>
                     <sub-events>
+                        <event-block sid="286387683438690">
+                            <conditions />
+                            <actions />
+                            <sub-events>
+                                <variable constant="0" name="count" sid="522414189186670" static="0" type="number">0</variable>
+                            </sub-events>
+                        </event-block>
                         <event-group description="Populating the Codex with blocks, their properties, methods, and initialized states." disabled="1" sid="557491947437331" title="Block Initialization" />
                         <event-group description="Preparing the inventory belt with blank blocks and cursor pinning." sid="845139613362371" title="Inventory Initialization">
                             <sub-events>
@@ -635,7 +620,7 @@
                                             <param id="0" name="Pin to">selectbox</param>
                                             <param id="1" name="Mode">0</param>
                                         </action>
-                                        <action disabled="1" id="0" name="Call function" sid="262128806778655" type="Function">
+                                        <action id="0" name="Call function" sid="262128806778655" type="Function">
                                             <param id="0" name="Name">&quot;endFeedLeft&quot;</param>
                                             <param id="1" name="Parameter {n}"></param>
                                         </action>
@@ -803,7 +788,7 @@
                 <condition id="-1" name="Every tick" sid="372632866822790" type="System" />
             </conditions>
             <actions>
-                <action disabled="1" id="0" name="Set text" sid="698388188184795" type="Text">
+                <action id="0" name="Set text" sid="698388188184795" type="Text">
                     <param id="0" name="Text">invpos &amp; &quot; / &quot; &amp; invtotal</param>
                 </action>
             </actions>
@@ -861,8 +846,12 @@
                 </action>
             </actions>
         </event-block>
-        <event-block sid="124354042080064">
-            <conditions />
+        <event-block sid="425937841453114">
+            <conditions>
+                <condition disabled="1" id="-6" name="Every X seconds" sid="868328843795585" type="System">
+                    <param id="0" name="Interval (seconds)">cooldown</param>
+                </condition>
+            </conditions>
             <actions />
         </event-block>
     </events>
